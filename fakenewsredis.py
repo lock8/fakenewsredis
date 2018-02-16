@@ -340,8 +340,10 @@ class FakeStrictRedis(object):
         return value
 
     def exists(self, name):
+        return int(name in self._db)
+
+    def __contains__(self, name):
         return name in self._db
-    __contains__ = exists
 
     def expire(self, name, time):
         return self._expire(name, time)
