@@ -3074,6 +3074,17 @@ class TestFakeStrictRedis(unittest.TestCase):
         val = self.redis.get('foo')
         self.assertEqual(val, b'baz')
 
+    def test_eval_exists(self):
+        lua = 'return redis.call("EXISTS", KEYS[1])'
+        val = self.redis.eval(lua, 1, 'foo')
+        self.assertEqual(val, 0)
+        self.assertIsInstance(val, int)
+
+        self.redis.set('foo', 'foo')
+        val = self.redis.eval(lua, 1, 'foo')
+        self.assertEqual(val, 1)
+        self.assertIsInstance(val, int)
+
     def test_eval_lrange(self):
         self.redis.lpush("foo", "bar")
         val = self.redis.eval('return redis.call("LRANGE", KEYS[1], 0, 1)', 1, 'foo')
